@@ -3,10 +3,10 @@ import { FoodBoxSchema, VisionFoodSchema } from "./types";
 
 const VisionResponseSchema = z.object({
   foods: z.array(VisionFoodSchema),
-  reference: z
+  plate: z
     .object({
-      type: z.enum(["credit_card", "fork", "unknown"]).optional(),
-      bbox: FoodBoxSchema.optional()
+      visible: z.boolean().optional(),
+      diameter_cm: z.number().optional()
     })
     .optional()
 });
@@ -31,7 +31,7 @@ export async function analyzeFoodImage(imageBase64: string, apiKey?: string): Pr
         {
           role: "system",
           content:
-            "You are a vision assistant. Return JSON with foods detected, confidence 0-1, and optional bounding boxes. Include a reference object (fork or credit card) if visible."
+            "You are a vision assistant. Return JSON with foods detected, confidence 0-1, optional bounding boxes, and a portionFactor per item based on plate size (1.0 = typical serving). Include plate visibility and estimated diameter if possible."
         },
         {
           role: "user",
@@ -39,7 +39,7 @@ export async function analyzeFoodImage(imageBase64: string, apiKey?: string): Pr
             {
               type: "text",
               text:
-                "Identify foods in this photo. Respond with JSON: {foods:[{name, confidence, bbox:{x,y,width,height}}], reference:{type, bbox}}. If bbox not clear, omit it."
+                "Identify foods in this photo. Respond with JSON: {foods:[{name, confidence, bbox:{x,y,width,height}, portionFactor}], plate:{visible, diameter_cm}}. If bbox or plate details are unclear, omit them. Estimate portionFactor using plate size cues."
             },
             {
               type: "image_url",

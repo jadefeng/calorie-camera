@@ -1,12 +1,7 @@
 import type { NutritionLookup } from "./types";
 import { findFallbackFood } from "./nutrition";
 
-const DEFAULT_SERVING_AREA_CM2 = 80;
-const DEFAULT_RANGE = 0.3;
-const REFERENCE_OBJECTS = {
-  credit_card: { areaCm2: 8.56 * 5.4 },
-  fork: { areaCm2: 19 * 2.5 }
-};
+const DEFAULT_RANGE = 0.35;
 
 export type BBox = {
   x: number;
@@ -17,36 +12,22 @@ export type BBox = {
 
 export type PortionEstimate = {
   grams: number;
-  method: "reference_object" | "default_serving";
+  method: "default_serving";
   rangeGrams: [number, number];
   servingGrams: number;
   servingLabel: string;
 };
 
+export function applyPortionFactor(grams: number, factor?: number) {
+  if (!factor) return grams;
+  return Math.max(10, grams * factor);
+}
+
 export function estimatePortion(
   foodName: string,
-  referenceObject: keyof typeof REFERENCE_OBJECTS | "none",
-  foodBox?: BBox,
-  referenceBox?: BBox
+  _foodBox?: BBox
 ): PortionEstimate {
   const nutrition = findFallbackFood(foodName);
-  if (referenceObject !== "none" && foodBox && referenceBox) {
-    const referenceAreaPx = referenceBox.width * referenceBox.height;
-    const foodAreaPx = foodBox.width * foodBox.height;
-    if (referenceAreaPx > 0 && foodAreaPx > 0) {
-      const cm2PerPx = REFERENCE_OBJECTS[referenceObject].areaCm2 / referenceAreaPx;
-      const foodAreaCm2 = foodAreaPx * cm2PerPx;
-      const grams = Math.max(15, (nutrition.servingGrams / DEFAULT_SERVING_AREA_CM2) * foodAreaCm2);
-      return {
-        grams,
-        method: "reference_object",
-        rangeGrams: buildRange(grams, 0.2),
-        servingGrams: nutrition.servingGrams,
-        servingLabel: nutrition.servingLabel
-      };
-    }
-  }
-
   return {
     grams: nutrition.servingGrams,
     method: "default_serving",

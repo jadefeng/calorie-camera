@@ -4,7 +4,7 @@ Mobile-first PWA that estimates calories from a food photo with editable results
 
 ## Features
 - Camera capture + upload fallback
-- Two-stage analysis: vision detection + portion/nutrition estimate
+- Two-stage analysis: vision detection + portion/nutrition estimate (plate cues or defaults)
 - Editable foods and portion controls
 - Local history stored in `localStorage`
 - Friendly confidence banner + disclaimer

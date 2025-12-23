@@ -34,7 +34,6 @@ export default function Home() {
   const [compressedImage, setCompressedImage] = useState<string | null>(null);
   const [items, setItems] = useState<EditableItem[]>([]);
   const [history, setHistory] = useState(loadHistory());
-  const [referenceObject, setReferenceObject] = useState<"none" | "credit_card" | "fork">("none");
   const [progressIndex, setProgressIndex] = useState(0);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [thumbnail, setThumbnail] = useState<string | null>(null);
@@ -97,8 +96,7 @@ export default function Home() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          imageBase64: compressedImage,
-          referenceObject
+          imageBase64: compressedImage
         })
       });
 
@@ -226,7 +224,6 @@ export default function Home() {
     setPreviewUrl(null);
     setCompressedImage(null);
     setItems([]);
-    setReferenceObject("none");
     setErrorMessage(null);
     setThumbnail(null);
     if (previewUrl) URL.revokeObjectURL(previewUrl);
@@ -296,25 +293,6 @@ export default function Home() {
                   alt="Selected food"
                   className="h-60 w-full rounded-2xl object-cover"
                 />
-
-                <div className="space-y-2">
-                  <p className="text-sm font-semibold text-ink">Reference object</p>
-                  <div className="flex flex-wrap gap-2">
-                    {["none", "credit_card", "fork"].map((value) => (
-                      <button
-                        key={value}
-                        onClick={() => setReferenceObject(value as typeof referenceObject)}
-                        className={`rounded-full px-4 py-2 text-xs font-semibold transition ${
-                          referenceObject === value
-                            ? "bg-moss text-sand"
-                            : "bg-sand text-ink shadow-inset"
-                        }`}
-                      >
-                        {value === "none" ? "No reference" : value.replace("_", " ")}
-                      </button>
-                    ))}
-                  </div>
-                </div>
 
                 <button
                   className="w-full rounded-2xl bg-ink py-3 text-sm font-semibold text-sand"
@@ -471,7 +449,7 @@ export default function Home() {
             <p className="font-semibold text-ink">How it works</p>
             <ul className="mt-3 space-y-2 text-sm">
               <li>1. Photo is analyzed by a vision model to detect foods.</li>
-              <li>2. Portions are estimated from defaults or a reference object.</li>
+              <li>2. Portions are estimated from plate size cues or defaults.</li>
               <li>3. Calories are looked up and summed with uncertainty.</li>
             </ul>
           </div>

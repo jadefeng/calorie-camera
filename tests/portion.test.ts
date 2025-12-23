@@ -3,20 +3,15 @@ import { estimatePortion, estimateCalories } from "@/lib/portion";
 import { findFallbackFood } from "@/lib/nutrition";
 
 describe("portion estimation", () => {
-  it("uses default serving when no reference object", () => {
+  it("uses default serving by default", () => {
     const portion = estimatePortion("apple", "none");
     expect(portion.method).toBe("default_serving");
     expect(portion.grams).toBeGreaterThan(50);
   });
 
-  it("scales with reference object and bounding boxes", () => {
-    const portion = estimatePortion(
-      "pizza",
-      "credit_card",
-      { x: 0, y: 0, width: 200, height: 200 },
-      { x: 0, y: 0, width: 100, height: 60 }
-    );
-    expect(portion.method).toBe("reference_object");
+  it("uses default serving even with bounding boxes", () => {
+    const portion = estimatePortion("pizza", { x: 0, y: 0, width: 200, height: 200 });
+    expect(portion.method).toBe("default_serving");
     expect(portion.grams).toBeGreaterThan(40);
   });
 });

@@ -1,8 +1,7 @@
 import { z } from "zod";
 
 export const AnalyzeRequestSchema = z.object({
-  imageBase64: z.string().min(10),
-  referenceObject: z.enum(["credit_card", "fork", "none"]).optional().default("none")
+  imageBase64: z.string().min(10)
 });
 
 export type AnalyzeRequest = z.infer<typeof AnalyzeRequestSchema>;
@@ -17,7 +16,8 @@ export const FoodBoxSchema = z.object({
 export const VisionFoodSchema = z.object({
   name: z.string(),
   confidence: z.number().min(0).max(1),
-  bbox: FoodBoxSchema.optional()
+  bbox: FoodBoxSchema.optional(),
+  portionFactor: z.number().min(0.3).max(3).optional()
 });
 
 export const AnalyzeItemSchema = z.object({
