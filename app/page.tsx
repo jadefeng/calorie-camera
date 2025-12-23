@@ -223,7 +223,6 @@ export default function Home() {
 
   function startOver() {
     setStep("idle");
-    setSelectedFile(null);
     setPreviewUrl(null);
     setCompressedImage(null);
     setItems([]);
